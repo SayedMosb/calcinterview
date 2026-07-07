@@ -1,31 +1,27 @@
-const express = require('express');
-const app = express();
+const http = require('node:http');
 
-app.get('/add',(req,res)=>{
-    const num1 =Number(req.query.num1);
-    const num2 =Number(req.query.num2);
-     res.json({result:num1+num2});
-})
+const server = http.createServer((req, res) => {
+    const url = new URL(req.url, 'http://localhost:3000');
 
-app.get('/subtract',(req,res)=>{
-    const num1 =Number(req.query.num1);
-    const num2 =Number(req.query.num2);
-    res.json({result:num1-num2});
-})
+    const num1 = Number(url.searchParams.get('a'));
+    const num2 = Number(url.searchParams.get('b'));
 
-app.get('/multiply',(req,res)=>{
-   const num1 =Number(req.query.num1);
-    const num2 =Number(req.query.num2);
-    res.json({result:num1*num2});
-})
+    res.setHeader('Content-Type', 'application/json');
 
-app.get('/divide',(req,res)=>{
-    const num1 =Number(req.query.num1);
-    const num2 =Number(req.query.num2);
-    
-     res.json({result:num1/num2});
-})
+    if (url.pathname === '/add') {
+        res.end(JSON.stringify({ result: num1 + num2 }));
+    } else if (url.pathname === '/subtract') {
+        res.end(JSON.stringify({ result: num1 - num2 }));
+    } else if (url.pathname === '/multiply') {
+        res.end(JSON.stringify({ result: num1 * num2 }));
+    } else if (url.pathname === '/divide') {
+        res.end(JSON.stringify({ result: num1 / num2 }));
+    } else {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ message: 'Not Found' }));
+    }
+});
 
-app.listen(3000,()=>{
-    console.log('server running at port 3000');
-})
+server.listen(3000, () => {
+    console.log('Server running at port 3000');
+});
